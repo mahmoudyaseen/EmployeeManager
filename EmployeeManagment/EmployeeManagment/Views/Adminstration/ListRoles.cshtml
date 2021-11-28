@@ -1,0 +1,76 @@
+﻿@model IEnumerable<IdentityRole>
+
+@using Microsoft.AspNetCore.Authorization
+
+@inject IAuthorizationService authorizationService
+
+@{
+    ViewBag.Title = "Roles";
+}
+
+<h1>All Roles</h1>
+
+@if (!Model.Any())
+{
+    <div class="card">
+        <div class="card-header">
+            No Roles yet
+        </div>
+        <div class="card-body">
+            <h5 class="card-title">
+                Use the button bellow to create role
+            </h5>
+                
+            @if ((await authorizationService.AuthorizeAsync(User, "CreateRolePolicy")).Succeeded)
+            {
+                <a class="btn btn-primary" style="width:auto;" asp-controller="adminstration" asp-action="createrole">Create</a>
+            }
+
+        </div>
+    </div>
+}
+else
+{
+    @if ((await authorizationService.AuthorizeAsync(User, "CreateRolePolicy")).Succeeded)
+    {
+        <a class="btn btn-primary mb-3" style="width:auto;" asp-controller="adminstration" asp-action="createrole">Create</a>
+    }
+
+    @foreach (var role in Model)
+    {
+        <div class="card mb-3">
+            <div class="card-header">
+                Role Id : @role.Id
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">@role.Name</h5>
+            </div>
+            <div class="card-footer">
+                @if ((await authorizationService.AuthorizeAsync(User, "EditRolePolicy")).Succeeded)
+                {
+                    <a class="btn btn-info" asp-controller="adminstration" asp-action="EditRole" asp-route-id="@role.Id">Edit</a>
+                }
+                @if ((await authorizationService.AuthorizeAsync(User, "DeleteRolePolicy")).Succeeded)
+                {
+
+                    <form method="post" asp-action="deleterole" asp-route-id="@role.Id" style="display:inline;">
+
+                        <span id="confirmDeleteSpan_@role.Id" style="display:none;">
+                            <span>Are u sure u want to delete this role?</span>
+                            <button type="submit" class="btn btn-danger">Yes</button>
+                            <a href="#" class="btn btn-primary" onclick="confirmDelete('@role.Id', false)">NO</a>
+                        </span>
+
+                        <span id="deleteSpan_@role.Id">
+                            <a href="#" class="btn btn-danger" onclick="confirmDelete('@role.Id', true)">Delete</a>
+                        </span>
+                    </form>
+                }
+            </div>
+        </div>
+    }
+}
+
+@section Scripts{
+    <script src="~/JS/CustomScript.js"></script>
+}

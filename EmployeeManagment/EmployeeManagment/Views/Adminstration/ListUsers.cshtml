@@ -1,0 +1,57 @@
+﻿@model IEnumerable<ApplicationUser>
+
+@{
+    ViewBag.Title = "Users";
+}
+
+<h1>All Users</h1>
+
+@if (!Model.Any())
+{
+    <div class="card">
+        <div class="card-header">
+            No Users yet
+        </div>
+        <div class="card-body">
+            <h5 class="card-title">
+                Use the button bellow to create user
+            </h5>
+            <a class="btn btn-primary" style="width:auto;" asp-controller="account" asp-action="register">Create</a>
+        </div>
+    </div>
+}
+else
+{
+    <a class="btn btn-primary mb-3" style="width:auto;" asp-controller="account" asp-action="register">Create</a>
+
+    @foreach (var user in Model)
+    {
+        <div class="card mb-3">
+            <div class="card-header">
+                User Id : @user.Id
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">@user.UserName</h5>
+            </div>
+            <div class="card-footer">
+                <a class="btn btn-info" asp-controller="adminstration" asp-action="edituser" asp-route-id="@user.Id">Edit</a>
+                <form method="post" asp-action="deleteuser" asp-route-id="@user.Id" style="display:inline;">
+
+                    <span id="confirmDeleteSpan_@user.Id" style="display:none;">
+                        <span>Are u sure u want to delete this user?</span>
+                        <button type="submit" class="btn btn-danger">Yes</button>
+                        <a href="#" class="btn btn-primary" onclick="confirmDelete('@user.Id', false)">NO</a>
+                    </span>
+
+                    <span id="deleteSpan_@user.Id">
+                        <a href="#" class="btn btn-danger" onclick="confirmDelete('@user.Id', true)">Delete</a>
+                    </span>
+                </form>
+            </div>
+        </div>
+    }
+}
+
+@section Scripts{ 
+    <script src="~/JS/CustomScript.js"></script>
+}
